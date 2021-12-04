@@ -113,3 +113,8 @@ venv.bak/
 weights/
 output_monodepth/
 output_semseg/
+
+dep_lmdb/
+img_lmdb/
+seg_lmdb/
+img/
