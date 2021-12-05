@@ -24,7 +24,7 @@ def run(img_name):
             areas.append(area)
             labels.append(i)
 
-    return prediction
+    return prediction, areas, labels
 
     # mask_dset = dbo_mask.create_dataset(os.path.basename(img_name), data=prediction,dtype= np.uint8)
     # mask_dset.attrs['area'] = np.array(areas)

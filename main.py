@@ -1,4 +1,6 @@
 import argparse
+import pickle
+
 import torch
 from PIL import Image
 import os.path
@@ -173,18 +175,24 @@ if __name__ == "__main__":
 
             img = np.asarray(Image.open(os.path.join(args.input_path, file)).convert('RGB'))
             depth_map = monodepth.run(os.path.join(args.input_path, file), model, device, transform, args)
-            segmentation_map = segmentation.run(os.path.join(args.input_path, file))
+            segmentation_map, areas, labels = segmentation.run(os.path.join(args.input_path, file))
+
+            # print(img.shape)
+            # print(depth_map.shape)
+            # print(segmentation_map.shape)
 
             # print("Image:", img)
             # print("Depth Map:", depth_map)
             # print("Segmentation Map:", segmentation_map)
 
             with img_env.begin(write=True) as txn:
-                txn.put(file.encode("ascii"), img)
+                txn.put(file.encode("ascii"), pickle.dumps(img))
 
             with dep_env.begin(write=True) as txn:
-                txn.put(file.encode("ascii"), depth_map)
+                txn.put(file.encode("ascii"), pickle.dumps(depth_map))
 
             with seg_env.begin(write=True) as txn:
-                txn.put(file.encode("ascii"), segmentation_map)
+                txn.put(file.encode("ascii"), pickle.dumps(segmentation_map))
+                txn.put((file + "_areas").encode("ascii"), pickle.dumps(areas))
+                txn.put((file + "_labels").encode("ascii"), pickle.dumps(labels))
 
